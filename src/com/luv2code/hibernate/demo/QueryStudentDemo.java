@@ -1,5 +1,7 @@
 package com.luv2code.hibernate.demo;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -20,16 +22,35 @@ public class QueryStudentDemo {
 		Session session = factory.getCurrentSession();
 		
 		try {
-			// create a student object
-			System.out.println("Creating new student object...");
-			Student tempStudent = new Student("Paul", "Wall", "paul@luv2code.com");
-			
 			// start a transaction
 			session.beginTransaction();
 			
-			// save the student object
-			System.out.println("Saving the student...");
-			session.save(tempStudent);
+			// query students
+			List<Student> theStudents = session.createQuery("from Student").getResultList();
+			
+			// display the students
+			displayStudents(theStudents);
+			
+			// query students: lastName='Doe'
+			theStudents = session.createQuery("from Student s where s.lastName='Doe'").getResultList();
+			
+			// display the students
+			System.out.println("\n\nStudents who have last name of Doe");
+			displayStudents(theStudents);
+			
+			// query students: lastName = 'Doe' OR firstName='Daffy'
+			theStudents = session.createQuery("from Student s where s.lastName = 'Doe' OR s.firstName = 'Daffy'").getResultList();
+			
+			// display the students
+			System.out.println("\n\nStudents who have last name of Doe OR first name Daffy");
+			displayStudents(theStudents);
+			
+			// query students where email LIKE '%luv2code.com'
+			theStudents = session.createQuery("from Student s where s.email LIKE '%gmail.com'").getResultList();
+			
+			// display the students
+			System.out.println("\n\nStudents whose email ends with luv2code.com");
+			displayStudents(theStudents);
 			
 			// commit transaction
 			session.getTransaction().commit();
@@ -37,6 +58,12 @@ public class QueryStudentDemo {
 			System.out.println("Done!");
 		} finally {
 			factory.close();
+		}
+	}
+
+	private static void displayStudents(List<Student> theStudents) {
+		for (Student tempStudent : theStudents) {
+			System.out.println(tempStudent);
 		}
 	}
 
